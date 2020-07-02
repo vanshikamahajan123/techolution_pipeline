@@ -1,7 +1,7 @@
 format_version: 3
 pipeline {
   environment {
-    registry = 'https://ap-south-1.console.aws.amazon.com/ecr/repositories/techolution/?region=ap-south-1'
+    registry = '500722624043.dkr.ecr.ap-south-1.amazonaws.com/techolution'
     registryCredential = '***'
     dockerImage = 'Dockerfile'
   }
@@ -17,7 +17,7 @@ pipeline {
     stage('Deploy image') {
         steps{
             script{
-                docker.withRegistry("https://ap-south-1.console.aws.amazon.com/ecr/repositories/techolution/?region=ap-south-1" + "registryCredential:*****") {
+                docker.withRegistry("500722624043.dkr.ecr.ap-south-1.amazonaws.com/techolution" + "registryCredential:*****") {
                     dockerImage.push()
                 }
             }
