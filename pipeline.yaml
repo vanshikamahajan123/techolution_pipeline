@@ -1,38 +1,27 @@
 format_version: 3
-pipelines:
-  build_and_publish_image:
-    group: sample
-    lock_behavior: unlockWhenFinished
-    display_order: 1
-    environment_variables:
-    materials:
-      git:
-        git: 
-        shallow_clone: true
-        auto_update: true
-        branch: master
-    stages:
-    - build_and_publish_image:
-        fetch_materials: true
-        keep_artifacts: false
-        clean_workspace: false
-        approval:
-          type: success
-        jobs:
-          build_image:
-            timeout: 0
-            artifacts:
-            - external:
-                id: bulletin-board
-                store_id: dockerhub
-                configuration:
-                  options:
-                    Image: vanshikamahajan/redis
-                    Tag: redis
-            tasks:
-            - exec:
-                arguments:
-                - -c
-                - docker build -t vanshikamahajan/redis:latest . -f Dockerfile
-                command: /bin/bash
-                run_if: passed
+pipeline {
+  environment {
+    registry = 'https://ap-south-1.console.aws.amazon.com/ecr/repositories/techolution/?region=ap-south-1'
+    registryCredential = '***'
+    dockerImage = 'Dockerfile'
+  }
+  agent any
+  stages {
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build vanshikamahajan/redis:latest"
+        }
+      }
+    }
+    stage('Deploy image') {
+        steps{
+            script{
+                docker.withRegistry("https://ap-south-1.console.aws.amazon.com/ecr/repositories/techolution/?region=ap-south-1" + "registryCredential:*****") {
+                    dockerImage.push()
+                }
+            }
+        }
+    }
+  }
+}
